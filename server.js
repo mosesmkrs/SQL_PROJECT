@@ -6,14 +6,14 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-const port = process.env.PORT || 8081;
+const port = process.env.DB_PORT || 8081;
 
 // MySQL connection configuration
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'csv_db 6'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
 // Connect to MySQL
