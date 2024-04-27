@@ -45,6 +45,66 @@ app.get('/equipments', (req, res) => {
     res.json(results);
   });
 });
+app.get('/creditTransactions', (req, res) => {
+  db.query('SELECT * FROM credittransactiontable3', (err, results) => {
+    if (err) {
+      console.error('Error fetching data: ');
+      res.status(500).send('Error fetching data');
+      return;
+    }
+    res.json(results);
+  });
+});
+app.get('/crops', (req, res) => {
+  db.query('SELECT * FROM cropstable', (err, results) => {
+    if (err) {
+      console.error('Error fetching data: ');
+      res.status(500).send('Error fetching data');
+      return;
+    }
+    res.json(results);
+  });
+});
+app.get('/farmercrops', (req, res) => {
+  db.query('SELECT * FROM farmerscropstable', (err, results) => {
+    if (err) {
+      console.error('Error fetching data: ');
+      res.status(500).send('Error fetching data');
+      return;
+    }
+    res.json(results);
+  });
+});
+app.get('/inputs', (req, res) => {
+  db.query('SELECT * FROM inputstable', (err, results) => {
+    if (err) {
+      console.error('Error fetching data: ');
+      res.status(500).send('Error fetching data');
+      return;
+    }
+    res.json(results);
+  });
+});
+app.get('/assessment', (req, res) => {
+  db.query('SELECT * FROM productivityassessmenttable', (err, results) => {
+    if (err) {
+      console.error('Error fetching data: ');
+      res.status(500).send('Error fetching data');
+      return;
+    }
+    res.json(results);
+  });
+});
+app.get('/surplus', (req, res) => {
+  db.query('SELECT * FROM surplussalestable', (err, results) => {
+    if (err) {
+      console.error('Error fetching data: ');
+      res.status(500).send('Error fetching data');
+      return;
+    }
+    res.json(results);
+  });
+});
 
 
 // Start server
