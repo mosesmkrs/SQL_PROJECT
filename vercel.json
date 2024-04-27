@@ -1,9 +1,16 @@
 {
   "version": 2,
   "builds": [
-    { "src": "*.js", "use": "@vercel/node" }
+    { "src": "server.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/" }
+    { "src": "/data", "dest": "/server.js" },
+    { "src": "/equipments", "dest": "/server.js" },
+    { "src": "/creditTransactions", "dest": "/server.js" },
+    { "src": "/crops", "dest": "/server.js" },
+    { "src": "/farmercrops", "dest": "/server.js" },
+    { "src": "/inputs", "dest": "/server.js" },
+    { "src": "/assessment", "dest": "/server.js" },
+    { "src": "/surplus", "dest": "/server.js" }
   ]
 }
