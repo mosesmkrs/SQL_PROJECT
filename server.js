@@ -25,6 +25,18 @@ db.connect((err) => {
   console.log('Connected to MySQL database');
 });
 
+// Reconnect on error
+db.on('error', function(err) {
+  console.error('Database error:', err.message);
+  if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+    console.log('Reconnecting to database...');
+    db.connect();
+  } else {
+    throw err;
+  }
+});
+
+
 // Route to fetch data from MySQL
 // Route to fetch data from MySQL
 app.get('/data', (req, res) => {
