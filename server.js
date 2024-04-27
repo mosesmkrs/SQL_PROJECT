@@ -30,7 +30,7 @@ db.connect((err) => {
 app.get('/data', (req, res) => {
   db.query('SELECT * FROM farmersdetails_1', (err, results) => {
     if (err) {
-      console.error('Error fetching data: ');
+      console.error('Error fetching data: ', err.message);
       res.status(500).send('Error fetching data');
       return;
     }
