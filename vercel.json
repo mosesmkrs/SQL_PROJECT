@@ -4,13 +4,13 @@
     { "src": "server.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/data", "dest": "/server.js" },
-    { "src": "/api/equipments", "dest": "/server.js" },
-    { "src": "/api/creditTransactions", "dest": "/server.js" },
-    { "src": "/api/crops", "dest": "/server.js" },
-    { "src": "/api/farmercrops", "dest": "/server.js" },
-    { "src": "/api/inputs", "dest": "/server.js" },
-    { "src": "/api/assessment", "dest": "/server.js" },
-    { "src": "/api/surplus", "dest": "/server.js" }
+    { "src": "/api/data", "dest": "/api" },
+    { "src": "/api/equipments", "dest": "/api" },
+    { "src": "/api/creditTransactions", "dest": "/api" },
+    { "src": "/api/crops", "dest": "/api" },
+    { "src": "/api/farmercrops", "dest": "/api" },
+    { "src": "/api/inputs", "dest": "/api" },
+    { "src": "/api/assessment", "dest": "/api" },
+    { "src": "/api/surplus", "dest": "/api" }
   ]
 }
