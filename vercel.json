@@ -1,11 +1,16 @@
 {
-   "version": 2,
-   "routes": [
-     {
-       "src": "/(.*)",
-       "headers": { "Access-Control-Allow-Origin": "*" },
-       "dest": "/"
-     }
-   ]
- }
- 
+  "version": 2,
+  "builds": [
+    { "src": "server.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/data", "dest": "/server.js" },
+    { "src": "/equipments", "dest": "/server.js" },
+    { "src": "/creditTransactions", "dest": "/server.js" },
+    { "src": "/crops", "dest": "/server.js" },
+    { "src": "/farmercrops", "dest": "/server.js" },
+    { "src": "/inputs", "dest": "/server.js" },
+    { "src": "/assessment", "dest": "/server.js" },
+    { "src": "/surplus", "dest": "/server.js" }
+  ]
+}

@@ -39,7 +39,7 @@ db.on('error', function(err) {
 
 // Route to fetch data from MySQL
 // Route to fetch data from MySQL
-app.get('/data', (req, res) => {
+app.get('/data/', (req, res) => {
   db.query('SELECT * FROM farmersdetails_1', (err, results) => {
     if (err) {
       console.error('Error fetching data: ', err.message);
@@ -49,7 +49,7 @@ app.get('/data', (req, res) => {
     res.json(results);
   });
 });
-app.get('/equipments', (req, res) => {
+app.get('/equipments/', (req, res) => {
   db.query('SELECT * FROM equipmenttable', (err, results) => {
     if (err) {
       console.error('Error fetching data: ');
@@ -59,7 +59,7 @@ app.get('/equipments', (req, res) => {
     res.json(results);
   });
 });
-app.get('/creditTransactions', (req, res) => {
+app.get('/creditTransactions/', (req, res) => {
   db.query('SELECT * FROM credittransactiontable3', (err, results) => {
     if (err) {
       console.error('Error fetching data: ');
@@ -69,7 +69,7 @@ app.get('/creditTransactions', (req, res) => {
     res.json(results);
   });
 });
-app.get('/crops', (req, res) => {
+app.get('/crops/', (req, res) => {
   db.query('SELECT * FROM cropstable', (err, results) => {
     if (err) {
       console.error('Error fetching data: ');
@@ -79,7 +79,7 @@ app.get('/crops', (req, res) => {
     res.json(results);
   });
 });
-app.get('/farmercrops', (req, res) => {
+app.get('/farmercrops/', (req, res) => {
   db.query('SELECT * FROM farmerscropstable', (err, results) => {
     if (err) {
       console.error('Error fetching data: ');
@@ -89,7 +89,7 @@ app.get('/farmercrops', (req, res) => {
     res.json(results);
   });
 });
-app.get('/inputs', (req, res) => {
+app.get('/inputs/', (req, res) => {
   db.query('SELECT * FROM inputstable', (err, results) => {
     if (err) {
       console.error('Error fetching data: ');
@@ -99,7 +99,7 @@ app.get('/inputs', (req, res) => {
     res.json(results);
   });
 });
-app.get('/assessment', (req, res) => {
+app.get('/assessment/', (req, res) => {
   db.query('SELECT * FROM productivityassessmenttable', (err, results) => {
     if (err) {
       console.error('Error fetching data: ');
