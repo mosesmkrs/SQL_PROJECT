@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 const port = process.env.DB_PORT || 8081;
 
 // MySQL connection configuration
@@ -119,6 +120,61 @@ app.get('/api/surplus', (req, res) => {
     res.json(results);
   });
 });
+
+//post queries to add an entry
+app.post("/api/data", (req, res) => {
+  const q = "INSERT INTO farmersdetails_1(`FarmerID` ,`FirstName`, `Surname`, `HouseholdSize`, `ContactInfo`, `County`, `FarmSizeAcres`) VALUES (?)";
+
+  const values = [
+    req.body.FarmerID,
+    req.body.FirstName,
+    req.body.Surname,
+    req.body.HouseholdSize,
+    req.body.ContactInfo,
+    req.body.County,
+    req.body.FarmSizeAcres,
+  ];
+
+  db.query(q, [values], (err, data) => {
+    if (err) return res.send(err);
+    return res.json(data);
+  });
+});
+app.post("/api/equipments", (req, res) => {
+  const q = "INSERT INTO equipmenttable(`EquipmentID` ,`EquipmentName`, `ConditionGiven`, `ConditionReturned`, `FarmerAssigned`, `DateAssigned`) VALUES (?)";
+
+  const values = [
+    req.body.EquipmentID,
+    req.body.EquipmentName,
+    req.body.ConditionGiven,
+    req.body.ConditionReturned,
+    req.body.FarmerAssigned,
+    req.body.DateAssigned,
+  ];
+
+  db.query(q, [values], (err, data) => {
+    if (err) return res.send(err);
+    return res.json(data);
+  });
+});
+app.post("/api/creditTransactions", (req, res) => {
+  const q = "INSERT INTO credittransactiontable3(`TransactionID` ,`FarmerID`, `DateGiven`, `Amount`, `Purpose`, `RepaymentStatus`) VALUES (?)";
+
+  const values = [
+    req.body.TransactionID,
+    req.body.FarmerID,
+    req.body.DateGiven,
+    req.body.Amount,
+    req.body.Purpose,
+    req.body.RepaymentStatus,
+  ];
+
+  db.query(q, [values], (err, data) => {
+    if (err) return res.send(err);
+    return res.json(data);
+  });
+});
+
 
 
 // Start server
