@@ -1,130 +1,134 @@
 const express = require('express');
-const mysql = require('mysql');
-const cors = require('cors')
+const cors = require('cors');
 require('dotenv').config();
-
+const oracledb = require('oracledb');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-const port = process.env.DB_PORT || 8081;
+const port = process.env.PORT || 8081;
 
-// MySQL connection configuration
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-});
+// Oracle connection configuration
+const dbConfig = {
+  user: process.env.DB_USER || 'SYSDBA',
+  password: process.env.DB_PASSWORD || 'sys123',
+  connectString: process.env.DB_CONNECTION_STRING || 'localhost/XE'
+};
 
-// Connect to MySQL
-db.connect((err) => {
-  if (err) {
-    console.error('Error connecting to MySQL database');
-    return;
+// Function to establish connection to Oracle database
+async function initializeOracle() {
+  try {
+    await oracledb.createPool(dbConfig);
+    console.log('Oracle database connection pool created.');
+  } catch (err) {
+    console.error('Error creating Oracle database connection pool:', err);
+    process.exit(1); // Exit the process if connection fails
   }
-  console.log('Connected to MySQL database');
-});
+}
 
-// Reconnect on error
-db.on('error', function(err) {
-  console.error('Database error:', err.message);
-  if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-    console.log('Reconnecting to database...');
-    db.connect();
-  } else {
+// Initialize Oracle connection
+initializeOracle();
+
+// Function to execute a query
+async function executeQuery(query, params = []) {
+  let connection;
+  try {
+    connection = await oracledb.getConnection({
+      ...dbConfig,
+      privilege: oracledb.SYSDBA // Specify SYSDBA privilege here
+    });
+    const result = await connection.execute(query, params);
+    return result.rows;
+  } catch (err) {
+    console.error('Error executing query: ', err);
     throw err;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error('Error closing Oracle database connection:', err);
+      }
+    }
+  }
+}
+
+// Routes to fetch data
+app.get('/api/data/', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM Farmersdetails');
+    res.json(results);
+  } catch (err) {
+    res.status(500).send('Error fetching data: ' + err.message);
   }
 });
 
-
-// Route to fetch data from MySQL
-// Route to fetch data from MySQL
-app.get('/api/data/', (req, res) => {
-  db.query('SELECT * FROM farmersdetails_1', (err, results) => {
-    if (err) {
-      console.error('Error fetching data: ', err.message);
-      res.status(500).send('Error fetching data'+ err.message);
-      return;
-    }
+app.get('/api/equipments/', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM EquipmentTable');
     res.json(results);
-  });
-});
-app.get('/api/equipments/', (req, res) => {
-  db.query('SELECT * FROM equipmenttable', (err, results) => {
-    if (err) {
-      console.error('Error fetching data: ');
-      res.status(500).send('Error fetching data');
-      return;
-    }
-    res.json(results);
-  });
-});
-app.get('/api/creditTransactions/', (req, res) => {
-  db.query('SELECT * FROM credittransactiontable3', (err, results) => {
-    if (err) {
-      console.error('Error fetching data: ');
-      res.status(500).send('Error fetching data');
-      return;
-    }
-    res.json(results);
-  });
-});
-app.get('/api/crops/', (req, res) => {
-  db.query('SELECT * FROM cropstable', (err, results) => {
-    if (err) {
-      console.error('Error fetching data: ');
-      res.status(500).send('Error fetching data');
-      return;
-    }
-    res.json(results);
-  });
-});
-app.get('/api/farmercrops/', (req, res) => {
-  db.query('SELECT * FROM farmerscropstable', (err, results) => {
-    if (err) {
-      console.error('Error fetching data: ');
-      res.status(500).send('Error fetching data');
-      return;
-    }
-    res.json(results);
-  });
-});
-app.get('/api/inputs/', (req, res) => {
-  db.query('SELECT * FROM inputstable', (err, results) => {
-    if (err) {
-      console.error('Error fetching data: ');
-      res.status(500).send('Error fetching data');
-      return;
-    }
-    res.json(results);
-  });
-});
-app.get('/api/assessment/', (req, res) => {
-  db.query('SELECT * FROM productivityassessmenttable', (err, results) => {
-    if (err) {
-      console.error('Error fetching data: ');
-      res.status(500).send('Error fetching data');
-      return;
-    }
-    res.json(results);
-  });
-});
-app.get('/api/surplus', (req, res) => {
-  db.query('SELECT * FROM surplussalestable', (err, results) => {
-    if (err) {
-      console.error('Error fetching data: ');
-      res.status(500).send('Error fetching data');
-      return;
-    }
-    res.json(results);
-  });
+  } catch (err) {
+    res.status(500).send('Error fetching data: ' + err.message);
+  }
 });
 
-//post queries to add an entry
-app.post("/api/data", (req, res) => {
-  const q = "INSERT INTO farmersdetails_1(`FarmerID` ,`FirstName`, `Surname`, `HouseholdSize`, `ContactInfo`, `County`, `FarmSizeAcres`) VALUES (?)";
+app.get('/api/creditTransactions/', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM CreditTransactions');
+    res.json(results);
+  } catch (err) {
+    res.status(500).send('Error fetching data: ' + err.message);
+  }
+});
 
+app.get('/api/crops/', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM Crops');
+    res.json(results);
+  } catch (err) {
+    res.status(500).send('Error fetching data: ' + err.message);
+  }
+});
+
+app.get('/api/farmercrops/', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM FarmersCrops');
+    res.json(results);
+  } catch (err) {
+    res.status(500).send('Error fetching data: ' + err.message);
+  }
+});
+
+app.get('/api/inputs/', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM Inputs');
+    res.json(results);
+  } catch (err) {
+    res.status(500).send('Error fetching data: ' + err.message);
+  }
+});
+
+app.get('/api/assessment/', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM ProductivityAssessment');
+    res.json(results);
+  } catch (err) {
+    res.status(500).send('Error fetching data: ' + err.message);
+  }
+});
+
+app.get('/api/surplus', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM SurplusSalesTable');
+    res.json(results);
+  } catch (err) {
+    res.status(500).send('Error fetching data: ' + err.message);
+  }
+});
+
+// Post queries to add an entry
+app.post("/api/data", async (req, res) => {
+  const q = "INSERT INTO Farmersdetails (FarmerID, FirstName, Surname, HouseholdSize, ContactInfo, County, FarmSizeAcres) VALUES (:1, :2, :3, :4, :5, :6, :7)";
   const values = [
     req.body.FarmerID,
     req.body.FirstName,
@@ -134,15 +138,16 @@ app.post("/api/data", (req, res) => {
     req.body.County,
     req.body.FarmSizeAcres,
   ];
-
-  db.query(q, [values], (err, data) => {
-    if (err) return res.send(err);
-    return res.json(data);
-  });
+  try {
+    await executeQuery(q, values);
+    res.status(201).send('Entry added successfully');
+  } catch (err) {
+    res.status(500).send('Error adding entry: ' + err.message);
+  }
 });
-app.post("/api/equipments", (req, res) => {
-  const q = "INSERT INTO equipmenttable(`EquipmentID` ,`EquipmentName`, `ConditionGiven`, `ConditionReturned`, `FarmerAssigned`, `DateAssigned`) VALUES (?)";
 
+app.post("/api/equipments", async (req, res) => {
+  const q = "INSERT INTO EquipmentTable (EquipmentID, EquipmentName, ConditionGiven, ConditionReturned, FarmerAssigned, DateAssigned) VALUES (:1, :2, :3, :4, :5, :6)";
   const values = [
     req.body.EquipmentID,
     req.body.EquipmentName,
@@ -151,15 +156,16 @@ app.post("/api/equipments", (req, res) => {
     req.body.FarmerAssigned,
     req.body.DateAssigned,
   ];
-
-  db.query(q, [values], (err, data) => {
-    if (err) return res.send(err);
-    return res.json(data);
-  });
+  try {
+    await executeQuery(q, values);
+    res.status(201).send('Entry added successfully');
+  } catch (err) {
+    res.status(500).send('Error adding entry: ' + err.message);
+  }
 });
-app.post("/api/creditTransactions", (req, res) => {
-  const q = "INSERT INTO credittransactiontable3(`TransactionID` ,`FarmerID`, `DateGiven`, `Amount`, `Purpose`, `RepaymentStatus`) VALUES (?)";
 
+app.post("/api/creditTransactions", async (req, res) => {
+  const q = "INSERT INTO CreditTransactions (TransactionID, FarmerID, DateGiven, Amount, Purpose, RepaymentStatus) VALUES (:1, :2, :3, :4, :5, :6)";
   const values = [
     req.body.TransactionID,
     req.body.FarmerID,
@@ -168,14 +174,25 @@ app.post("/api/creditTransactions", (req, res) => {
     req.body.Purpose,
     req.body.RepaymentStatus,
   ];
-
-  db.query(q, [values], (err, data) => {
-    if (err) return res.send(err);
-    return res.json(data);
-  });
+  try {
+    await executeQuery(q, values);
+    res.status(201).send('Entry added successfully');
+  } catch (err) {
+    res.status(500).send('Error adding entry: ' + err.message);
+  }
 });
 
-
+// Close Oracle pool and exit process on SIGINT
+process.on('SIGINT', async () => {
+  try {
+    await oracledb.getPool().close(10);
+    console.log('Oracle connection pool closed');
+    process.exit(0);
+  } catch (err) {
+    console.error('Error closing Oracle connection pool:', err);
+    process.exit(1);
+  }
+});
 
 // Start server
 app.listen(port, () => {
