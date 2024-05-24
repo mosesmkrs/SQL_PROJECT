@@ -10,9 +10,9 @@ const port = process.env.PORT || 8081;
 
 // Oracle connection configuration
 const dbConfig = {
-  user: process.env.DB_USER || 'SYSDBA',
+  user: process.env.DB_USER || 'SYS',
   password: process.env.DB_PASSWORD || 'sys123',
-  connectString: process.env.DB_CONNECTION_STRING || 'localhost/XE'
+  connectString: process.env.DB_CONNECTION_STRING || '127.0.0.1/XE'
 };
 
 // Function to establish connection to Oracle database
